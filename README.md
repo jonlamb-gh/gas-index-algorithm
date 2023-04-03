@@ -1,4 +1,6 @@
 # gas-index-algorithm
 
-Rust port of https://github.com/Sensirion/gas-index-algorithm, version 3.2.2.
-First generated using https://github.com/immunant/c2rust, then refactored manually.
+An unofficial Rust port of Sensirion's [gas-index-algorithm](https://github.com/Sensirion/gas-index-algorithm) as
+of version 3.2.2.
+
+It was first generated using [c2rust](https://github.com/immunant/c2rust), then refactored manually.

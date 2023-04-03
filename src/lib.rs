@@ -1,19 +1,8 @@
 #![no_std]
-//#![forbid(unsafe_code)]
-//#![deny(warnings, clippy::all)]
+#![forbid(unsafe_code)]
+#![deny(warnings, clippy::all)]
 
-// TODO search/replace once done
-#![allow(non_camel_case_types)]
-#![allow(non_snake_case)]
-#![allow(non_upper_case_globals)]
-
-// TODO
-fn expf(_: f32) -> f32 {
-    todo!()
-}
-fn sqrtf(_: f32) -> f32 {
-    todo!()
-}
+use micromath::F32Ext;
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub enum AlgorithmType {
@@ -27,52 +16,52 @@ pub struct GasIndexAlgorithm {
 }
 
 impl GasIndexAlgorithm {
-    pub fn new(mAlgorithm_Type: AlgorithmType, sampling_interval: f32) -> Self {
+    pub fn new(algorithm_type: AlgorithmType, sampling_interval: f32) -> Self {
         let mut state = GasIndexAlgorithmParams {
-            mAlgorithm_Type,
-            mSamplingInterval: 0.0,
-            mIndex_Offset: 0.0,
-            mSraw_Minimum: 0,
-            mGating_Max_Duration_Minutes: 0.0,
-            mInit_Duration_Mean: 0.0,
-            mInit_Duration_Variance: 0.0,
-            mGating_Threshold: 0.0,
-            mIndex_Gain: 0.0,
-            mTau_Mean_Hours: 0.0,
-            mTau_Variance_Hours: 0.0,
-            mSraw_Std_Initial: 0.0,
-            mUptime: 0.0,
-            mSraw: 0.0,
-            mGas_Index: 0.0,
-            m_Mean_Variance_Estimator___Initialized: false,
-            m_Mean_Variance_Estimator___Mean: 0.0,
-            m_Mean_Variance_Estimator___Sraw_Offset: 0.0,
-            m_Mean_Variance_Estimator___Std: 0.0,
-            m_Mean_Variance_Estimator___Gamma_Mean: 0.0,
-            m_Mean_Variance_Estimator___Gamma_Variance: 0.0,
-            m_Mean_Variance_Estimator___Gamma_Initial_Mean: 0.0,
-            m_Mean_Variance_Estimator___Gamma_Initial_Variance: 0.0,
-            m_Mean_Variance_Estimator__Gamma_Mean: 0.0,
-            m_Mean_Variance_Estimator__Gamma_Variance: 0.0,
-            m_Mean_Variance_Estimator___Uptime_Gamma: 0.0,
-            m_Mean_Variance_Estimator___Uptime_Gating: 0.0,
-            m_Mean_Variance_Estimator___Gating_Duration_Minutes: 0.0,
-            m_Mean_Variance_Estimator___Sigmoid__K: 0.0,
-            m_Mean_Variance_Estimator___Sigmoid__X0: 0.0,
-            m_Mox_Model__Sraw_Std: 0.0,
-            m_Mox_Model__Sraw_Mean: 0.0,
-            m_Sigmoid_Scaled__K: 0.0,
-            m_Sigmoid_Scaled__X0: 0.0,
-            m_Sigmoid_Scaled__Offset_Default: 0.0,
-            m_Adaptive_Lowpass__A1: 0.0,
-            m_Adaptive_Lowpass__A2: 0.0,
-            m_Adaptive_Lowpass___Initialized: false,
-            m_Adaptive_Lowpass___X1: 0.0,
-            m_Adaptive_Lowpass___X2: 0.0,
-            m_Adaptive_Lowpass___X3: 0.0,
+            algorithm_type,
+            sampling_interval: 0.0,
+            index_offset: 0.0,
+            sraw_minimum: 0,
+            gating_max_duration_minutes: 0.0,
+            init_duration_mean: 0.0,
+            init_duration_variance: 0.0,
+            gating_threshold: 0.0,
+            index_gain: 0.0,
+            tau_mean_hours: 0.0,
+            tau_variance_hours: 0.0,
+            sraw_std_initial: 0.0,
+            uptime: 0.0,
+            sraw: 0.0,
+            gas_index: 0.0,
+            mean_variance_estimator_initialized: false,
+            mean_variance_estimator_mean: 0.0,
+            mean_variance_estimator_sraw_offset: 0.0,
+            mean_variance_estimator_std: 0.0,
+            mean_variance_estimator_gamma_mean: 0.0,
+            mean_variance_estimator_gamma_variance: 0.0,
+            mean_variance_estimator_gamma_initial_mean: 0.0,
+            mean_variance_estimator_gamma_initial_variance: 0.0,
+            mean_variance_estimator_gamma_mean2: 0.0,
+            mean_variance_estimator_gamma_variance2: 0.0,
+            mean_variance_estimator_uptime_gamma: 0.0,
+            mean_variance_estimator_uptime_gating: 0.0,
+            mean_variance_estimator_gating_duration_minutes: 0.0,
+            mean_variance_estimator_sigmoid_k: 0.0,
+            mean_variance_estimator_sigmoid_x0: 0.0,
+            mox_model_sraw_std: 0.0,
+            mox_model_sraw_mean: 0.0,
+            sigmoid_scaled_k: 0.0,
+            sigmoid_scaled_x0: 0.0,
+            sigmoid_scaled_offset_default: 0.0,
+            adaptive_lowpass_a1: 0.0,
+            adaptive_lowpass_a2: 0.0,
+            adaptive_lowpass_initialized: false,
+            adaptive_lowpass_x1: 0.0,
+            adaptive_lowpass_x2: 0.0,
+            adaptive_lowpass_x3: 0.0,
         };
 
-        state.init_with_sampling_interval(mAlgorithm_Type, sampling_interval);
+        state.init_with_sampling_interval(algorithm_type, sampling_interval);
 
         Self { state }
     }
@@ -88,47 +77,47 @@ impl GasIndexAlgorithm {
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
 pub struct GasIndexAlgorithmParams {
-    pub mAlgorithm_Type: AlgorithmType,
-    pub mSamplingInterval: f32,
-    pub mIndex_Offset: f32,
-    pub mSraw_Minimum: i32,
-    pub mGating_Max_Duration_Minutes: f32,
-    pub mInit_Duration_Mean: f32,
-    pub mInit_Duration_Variance: f32,
-    pub mGating_Threshold: f32,
-    pub mIndex_Gain: f32,
-    pub mTau_Mean_Hours: f32,
-    pub mTau_Variance_Hours: f32,
-    pub mSraw_Std_Initial: f32,
-    pub mUptime: f32,
-    pub mSraw: f32,
-    pub mGas_Index: f32,
-    pub m_Mean_Variance_Estimator___Initialized: bool,
-    pub m_Mean_Variance_Estimator___Mean: f32,
-    pub m_Mean_Variance_Estimator___Sraw_Offset: f32,
-    pub m_Mean_Variance_Estimator___Std: f32,
-    pub m_Mean_Variance_Estimator___Gamma_Mean: f32,
-    pub m_Mean_Variance_Estimator___Gamma_Variance: f32,
-    pub m_Mean_Variance_Estimator___Gamma_Initial_Mean: f32,
-    pub m_Mean_Variance_Estimator___Gamma_Initial_Variance: f32,
-    pub m_Mean_Variance_Estimator__Gamma_Mean: f32,
-    pub m_Mean_Variance_Estimator__Gamma_Variance: f32,
-    pub m_Mean_Variance_Estimator___Uptime_Gamma: f32,
-    pub m_Mean_Variance_Estimator___Uptime_Gating: f32,
-    pub m_Mean_Variance_Estimator___Gating_Duration_Minutes: f32,
-    pub m_Mean_Variance_Estimator___Sigmoid__K: f32,
-    pub m_Mean_Variance_Estimator___Sigmoid__X0: f32,
-    pub m_Mox_Model__Sraw_Std: f32,
-    pub m_Mox_Model__Sraw_Mean: f32,
-    pub m_Sigmoid_Scaled__K: f32,
-    pub m_Sigmoid_Scaled__X0: f32,
-    pub m_Sigmoid_Scaled__Offset_Default: f32,
-    pub m_Adaptive_Lowpass__A1: f32,
-    pub m_Adaptive_Lowpass__A2: f32,
-    pub m_Adaptive_Lowpass___Initialized: bool,
-    pub m_Adaptive_Lowpass___X1: f32,
-    pub m_Adaptive_Lowpass___X2: f32,
-    pub m_Adaptive_Lowpass___X3: f32,
+    pub algorithm_type: AlgorithmType,
+    pub sampling_interval: f32,
+    pub index_offset: f32,
+    pub sraw_minimum: i32,
+    pub gating_max_duration_minutes: f32,
+    pub init_duration_mean: f32,
+    pub init_duration_variance: f32,
+    pub gating_threshold: f32,
+    pub index_gain: f32,
+    pub tau_mean_hours: f32,
+    pub tau_variance_hours: f32,
+    pub sraw_std_initial: f32,
+    pub uptime: f32,
+    pub sraw: f32,
+    pub gas_index: f32,
+    pub mean_variance_estimator_initialized: bool,
+    pub mean_variance_estimator_mean: f32,
+    pub mean_variance_estimator_sraw_offset: f32,
+    pub mean_variance_estimator_std: f32,
+    pub mean_variance_estimator_gamma_mean: f32,
+    pub mean_variance_estimator_gamma_variance: f32,
+    pub mean_variance_estimator_gamma_initial_mean: f32,
+    pub mean_variance_estimator_gamma_initial_variance: f32,
+    pub mean_variance_estimator_gamma_mean2: f32,
+    pub mean_variance_estimator_gamma_variance2: f32,
+    pub mean_variance_estimator_uptime_gamma: f32,
+    pub mean_variance_estimator_uptime_gating: f32,
+    pub mean_variance_estimator_gating_duration_minutes: f32,
+    pub mean_variance_estimator_sigmoid_k: f32,
+    pub mean_variance_estimator_sigmoid_x0: f32,
+    pub mox_model_sraw_std: f32,
+    pub mox_model_sraw_mean: f32,
+    pub sigmoid_scaled_k: f32,
+    pub sigmoid_scaled_x0: f32,
+    pub sigmoid_scaled_offset_default: f32,
+    pub adaptive_lowpass_a1: f32,
+    pub adaptive_lowpass_a2: f32,
+    pub adaptive_lowpass_initialized: bool,
+    pub adaptive_lowpass_x1: f32,
+    pub adaptive_lowpass_x2: f32,
+    pub adaptive_lowpass_x3: f32,
 }
 
 impl GasIndexAlgorithmParams {
@@ -137,354 +126,331 @@ impl GasIndexAlgorithmParams {
         algorithm_type: AlgorithmType,
         sampling_interval: f32,
     ) {
-        self.mAlgorithm_Type = algorithm_type;
-        self.mSamplingInterval = sampling_interval;
-        match self.mAlgorithm_Type {
+        self.algorithm_type = algorithm_type;
+        self.sampling_interval = sampling_interval;
+        match self.algorithm_type {
             AlgorithmType::Nox => {
-                self.mIndex_Offset = 1.0f32;
-                self.mSraw_Minimum = 10000;
-                self.mGating_Max_Duration_Minutes = 60.0f32 * 12.0f32;
-                self.mInit_Duration_Mean = 3600.0f32 * 4.75f32;
-                self.mInit_Duration_Variance = 3600.0f32 * 5.70f32;
-                self.mGating_Threshold = 30.0f32;
+                self.index_offset = 1.0;
+                self.sraw_minimum = 10000;
+                self.gating_max_duration_minutes = 60.0 * 12.0;
+                self.init_duration_mean = 3600.0 * 4.75f32;
+                self.init_duration_variance = 3600.0 * 5.70;
+                self.gating_threshold = 30.0;
             }
             AlgorithmType::Voc => {
-                self.mIndex_Offset = 100.0f32;
-                self.mSraw_Minimum = 20000;
-                self.mGating_Max_Duration_Minutes = 60.0f32 * 3.0f32;
-                self.mInit_Duration_Mean = 3600.0f32 * 0.75f32;
-                self.mInit_Duration_Variance = 3600.0f32 * 1.45f32;
-                self.mGating_Threshold = 340.0f32;
+                self.index_offset = 100.0;
+                self.sraw_minimum = 20000;
+                self.gating_max_duration_minutes = 60.0 * 3.0;
+                self.init_duration_mean = 3600.0 * 0.75f32;
+                self.init_duration_variance = 3600.0 * 1.45f32;
+                self.gating_threshold = 340.0;
             }
         }
-        self.mIndex_Gain = 230.0f32;
-        self.mTau_Mean_Hours = 12.0f32;
-        self.mTau_Variance_Hours = 12.0f32;
-        self.mSraw_Std_Initial = 50.0f32;
+        self.index_gain = 230.0;
+        self.tau_mean_hours = 12.0;
+        self.tau_variance_hours = 12.0;
+        self.sraw_std_initial = 50.0;
         self.reset();
     }
 
-    fn init(&mut self, algorithm_type: AlgorithmType) {
-        self.init_with_sampling_interval(algorithm_type, 1.0f32);
-    }
-
     fn reset(&mut self) {
-        self.mUptime = 0.0;
-        self.mSraw = 0.0;
-        self.mGas_Index = 0.0;
+        self.uptime = 0.0;
+        self.sraw = 0.0;
+        self.gas_index = 0.0;
         self.init_instances();
     }
 
     fn init_instances(&mut self) {
-        self.mean_variance_estimator__set_parameters();
-        let sraw_std = self.mean_variance_estimator__get_std();
-        let sraw_mean = self.mean_variance_estimator__get_mean();
-        self.mox_model__set_parameters(sraw_std, sraw_mean);
-        match self.mAlgorithm_Type {
+        self.mean_variance_estimator_set_parameters();
+        let sraw_std = self.mean_variance_estimator_get_std();
+        let sraw_mean = self.mean_variance_estimator_get_mean();
+        self.mox_model_set_parameters(sraw_std, sraw_mean);
+        match self.algorithm_type {
             AlgorithmType::Nox => {
-                self.sigmoid_scaled__set_parameters(614.0f32, -0.0101f32, 1.0f32);
+                self.sigmoid_scaled_set_parameters(614.0, -0.0101f32, 1.0);
             }
             AlgorithmType::Voc => {
-                self.sigmoid_scaled__set_parameters(213.0f32, -0.0065f32, 100.0f32);
+                self.sigmoid_scaled_set_parameters(213.0, -0.0065f32, 100.0);
             }
         }
-        self.adaptive_lowpass__set_parameters();
+        self.adaptive_lowpass_set_parameters();
     }
 
     fn process(&mut self, mut sraw: i32) -> i32 {
-        if self.mUptime <= 45.0f32 {
-            self.mUptime = self.mUptime + self.mSamplingInterval;
+        if self.uptime <= 45.0 {
+            self.uptime += self.sampling_interval;
         } else {
             if sraw > 0 && sraw < 65000 {
-                if sraw < self.mSraw_Minimum + 1 {
-                    sraw = self.mSraw_Minimum + 1;
-                } else if sraw > self.mSraw_Minimum + 32767 {
-                    sraw = self.mSraw_Minimum + 32767;
+                if sraw < self.sraw_minimum + 1 {
+                    sraw = self.sraw_minimum + 1;
+                } else if sraw > self.sraw_minimum + 32767 {
+                    sraw = self.sraw_minimum + 32767;
                 }
-                self.mSraw = (sraw - self.mSraw_Minimum) as f32;
+                self.sraw = (sraw - self.sraw_minimum) as f32;
             }
-            if self.mAlgorithm_Type == AlgorithmType::Voc
-                || self.mean_variance_estimator__is_initialized()
+            if self.algorithm_type == AlgorithmType::Voc
+                || self.mean_variance_estimator_is_initialized()
             {
-                self.mGas_Index = self.mox_model__process(self.mSraw);
-                self.mGas_Index = self.sigmoid_scaled__process(self.mGas_Index);
+                self.gas_index = self.mox_model_process(self.sraw);
+                self.gas_index = self.sigmoid_scaled_process(self.gas_index);
             } else {
-                self.mGas_Index = self.mIndex_Offset;
+                self.gas_index = self.index_offset;
             }
-            self.mGas_Index = self.adaptive_lowpass__process(self.mGas_Index);
-            if self.mGas_Index < 0.5f32 {
-                self.mGas_Index = 0.5f32;
+            self.gas_index = self.adaptive_lowpass_process(self.gas_index);
+            if self.gas_index < 0.5f32 {
+                self.gas_index = 0.5f32;
             }
-            if self.mSraw > 0.0f32 {
-                self.mean_variance_estimator__process(self.mSraw);
+            if self.sraw > 0.0 {
+                self.mean_variance_estimator_process(self.sraw);
 
-                let sraw_std = self.mean_variance_estimator__get_std();
-                let sraw_mean = self.mean_variance_estimator__get_mean();
-                self.mox_model__set_parameters(sraw_std, sraw_mean);
+                let sraw_std = self.mean_variance_estimator_get_std();
+                let sraw_mean = self.mean_variance_estimator_get_mean();
+                self.mox_model_set_parameters(sraw_std, sraw_mean);
             }
         }
-        (self.mGas_Index + 0.5f32) as i32
+        (self.gas_index + 0.5f32) as i32
     }
 
-    fn mean_variance_estimator__set_parameters(&mut self) {
-        self.m_Mean_Variance_Estimator___Initialized = false;
-        self.m_Mean_Variance_Estimator___Mean = 0.0f32;
-        self.m_Mean_Variance_Estimator___Sraw_Offset = 0.0f32;
-        self.m_Mean_Variance_Estimator___Std = self.mSraw_Std_Initial;
-        self.m_Mean_Variance_Estimator___Gamma_Mean =
-            8.0f32 * 64.0f32 * (self.mSamplingInterval / 3600.0f32)
-                / (self.mTau_Mean_Hours + self.mSamplingInterval / 3600.0f32);
-        self.m_Mean_Variance_Estimator___Gamma_Variance = 64.0f32
-            * (self.mSamplingInterval / 3600.0f32)
-            / (self.mTau_Variance_Hours + self.mSamplingInterval / 3600.0f32);
-        match self.mAlgorithm_Type {
+    fn mean_variance_estimator_set_parameters(&mut self) {
+        self.mean_variance_estimator_initialized = false;
+        self.mean_variance_estimator_mean = 0.0;
+        self.mean_variance_estimator_sraw_offset = 0.0;
+        self.mean_variance_estimator_std = self.sraw_std_initial;
+        self.mean_variance_estimator_gamma_mean = 8.0 * 64.0 * (self.sampling_interval / 3600.0)
+            / (self.tau_mean_hours + self.sampling_interval / 3600.0);
+        self.mean_variance_estimator_gamma_variance = 64.0 * (self.sampling_interval / 3600.0)
+            / (self.tau_variance_hours + self.sampling_interval / 3600.0);
+        match self.algorithm_type {
             AlgorithmType::Nox => {
-                self.m_Mean_Variance_Estimator___Gamma_Initial_Mean =
-                    8.0f32 * 64.0f32 * self.mSamplingInterval
-                        / (1200.0f32 + self.mSamplingInterval);
+                self.mean_variance_estimator_gamma_initial_mean =
+                    8.0 * 64.0 * self.sampling_interval / (1200.0 + self.sampling_interval);
             }
             AlgorithmType::Voc => {
-                self.m_Mean_Variance_Estimator___Gamma_Initial_Mean =
-                    8.0f32 * 64.0f32 * self.mSamplingInterval / (20.0f32 + self.mSamplingInterval);
+                self.mean_variance_estimator_gamma_initial_mean =
+                    8.0 * 64.0 * self.sampling_interval / (20.0 + self.sampling_interval);
             }
         }
-        self.m_Mean_Variance_Estimator___Gamma_Initial_Variance =
-            64.0f32 * self.mSamplingInterval / (2500.0f32 + self.mSamplingInterval);
-        self.m_Mean_Variance_Estimator__Gamma_Mean = 0.0f32;
-        self.m_Mean_Variance_Estimator__Gamma_Variance = 0.0f32;
-        self.m_Mean_Variance_Estimator___Uptime_Gamma = 0.0f32;
-        self.m_Mean_Variance_Estimator___Uptime_Gating = 0.0f32;
-        self.m_Mean_Variance_Estimator___Gating_Duration_Minutes = 0.0f32;
+        self.mean_variance_estimator_gamma_initial_variance =
+            64.0 * self.sampling_interval / (2500.0 + self.sampling_interval);
+        self.mean_variance_estimator_gamma_mean2 = 0.0;
+        self.mean_variance_estimator_gamma_variance2 = 0.0;
+        self.mean_variance_estimator_uptime_gamma = 0.0;
+        self.mean_variance_estimator_uptime_gating = 0.0;
+        self.mean_variance_estimator_gating_duration_minutes = 0.0;
     }
 
-    fn mean_variance_estimator__set_states(
-        &mut self,
-        mut mean: f32,
-        mut std: f32,
-        mut uptime_gamma: f32,
-    ) {
-        self.m_Mean_Variance_Estimator___Mean = mean;
-        self.m_Mean_Variance_Estimator___Std = std;
-        self.m_Mean_Variance_Estimator___Uptime_Gamma = uptime_gamma;
-        self.m_Mean_Variance_Estimator___Initialized = true;
+    fn mean_variance_estimator_get_std(&mut self) -> f32 {
+        self.mean_variance_estimator_std
     }
 
-    fn mean_variance_estimator__get_std(&mut self) -> f32 {
-        self.m_Mean_Variance_Estimator___Std
+    fn mean_variance_estimator_get_mean(&mut self) -> f32 {
+        self.mean_variance_estimator_mean + self.mean_variance_estimator_sraw_offset
     }
 
-    fn mean_variance_estimator__get_mean(&mut self) -> f32 {
-        self.m_Mean_Variance_Estimator___Mean + self.m_Mean_Variance_Estimator___Sraw_Offset
+    fn mean_variance_estimator_is_initialized(&mut self) -> bool {
+        self.mean_variance_estimator_initialized
     }
 
-    fn mean_variance_estimator__is_initialized(&mut self) -> bool {
-        self.m_Mean_Variance_Estimator___Initialized
-    }
-
-    fn mean_variance_estimator___calculate_gamma(&mut self) {
-        let mut uptime_limit: f32 = 0.;
-        let mut sigmoid_gamma_mean: f32 = 0.;
-        let mut gamma_mean: f32 = 0.;
-        let mut gating_threshold_mean: f32 = 0.;
-        let mut sigmoid_gating_mean: f32 = 0.;
-        let mut sigmoid_gamma_variance: f32 = 0.;
-        let mut gamma_variance: f32 = 0.;
-        let mut gating_threshold_variance: f32 = 0.;
-        let mut sigmoid_gating_variance: f32 = 0.;
-        uptime_limit = 32767.0f32 - self.mSamplingInterval;
-        if self.m_Mean_Variance_Estimator___Uptime_Gamma < uptime_limit {
-            self.m_Mean_Variance_Estimator___Uptime_Gamma =
-                self.m_Mean_Variance_Estimator___Uptime_Gamma + self.mSamplingInterval;
+    fn mean_variance_estimator_calculate_gamma(&mut self) {
+        let uptime_limit = 32767.0 - self.sampling_interval;
+        if self.mean_variance_estimator_uptime_gamma < uptime_limit {
+            self.mean_variance_estimator_uptime_gamma += self.sampling_interval;
         }
-        if self.m_Mean_Variance_Estimator___Uptime_Gating < uptime_limit {
-            self.m_Mean_Variance_Estimator___Uptime_Gating =
-                self.m_Mean_Variance_Estimator___Uptime_Gating + self.mSamplingInterval;
+        if self.mean_variance_estimator_uptime_gating < uptime_limit {
+            self.mean_variance_estimator_uptime_gating += self.sampling_interval;
         }
-        self.mean_variance_estimator___sigmoid__set_parameters(self.mInit_Duration_Mean, 0.01f32);
-        sigmoid_gamma_mean = self.mean_variance_estimator___sigmoid__process(
-            self.m_Mean_Variance_Estimator___Uptime_Gamma,
-        );
-        gamma_mean = self.m_Mean_Variance_Estimator___Gamma_Mean
-            + (self.m_Mean_Variance_Estimator___Gamma_Initial_Mean
-                - self.m_Mean_Variance_Estimator___Gamma_Mean)
+        self.mean_variance_estimator_sigmoid_set_parameters(self.init_duration_mean, 0.01f32);
+        let sigmoid_gamma_mean =
+            self.mean_variance_estimator_sigmoid_process(self.mean_variance_estimator_uptime_gamma);
+        let gamma_mean = self.mean_variance_estimator_gamma_mean
+            + (self.mean_variance_estimator_gamma_initial_mean
+                - self.mean_variance_estimator_gamma_mean)
                 * sigmoid_gamma_mean;
-        gating_threshold_mean = self.mGating_Threshold
-            + (510.0f32 - self.mGating_Threshold)
-                * self.mean_variance_estimator___sigmoid__process(
-                    self.m_Mean_Variance_Estimator___Uptime_Gating,
+        let gating_threshold_mean = self.gating_threshold
+            + (510.0 - self.gating_threshold)
+                * self.mean_variance_estimator_sigmoid_process(
+                    self.mean_variance_estimator_uptime_gating,
                 );
-        self.mean_variance_estimator___sigmoid__set_parameters(gating_threshold_mean, 0.09f32);
-        sigmoid_gating_mean = self.mean_variance_estimator___sigmoid__process(self.mGas_Index);
-        self.m_Mean_Variance_Estimator__Gamma_Mean = sigmoid_gating_mean * gamma_mean;
-        self.mean_variance_estimator___sigmoid__set_parameters(
-            self.mInit_Duration_Variance,
-            0.01f32,
-        );
-        sigmoid_gamma_variance = self.mean_variance_estimator___sigmoid__process(
-            self.m_Mean_Variance_Estimator___Uptime_Gamma,
-        );
-        gamma_variance = self.m_Mean_Variance_Estimator___Gamma_Variance
-            + (self.m_Mean_Variance_Estimator___Gamma_Initial_Variance
-                - self.m_Mean_Variance_Estimator___Gamma_Variance)
+        self.mean_variance_estimator_sigmoid_set_parameters(gating_threshold_mean, 0.09f32);
+        let sigmoid_gating_mean = self.mean_variance_estimator_sigmoid_process(self.gas_index);
+        self.mean_variance_estimator_gamma_mean2 = sigmoid_gating_mean * gamma_mean;
+        self.mean_variance_estimator_sigmoid_set_parameters(self.init_duration_variance, 0.01f32);
+        let sigmoid_gamma_variance =
+            self.mean_variance_estimator_sigmoid_process(self.mean_variance_estimator_uptime_gamma);
+        let gamma_variance = self.mean_variance_estimator_gamma_variance
+            + (self.mean_variance_estimator_gamma_initial_variance
+                - self.mean_variance_estimator_gamma_variance)
                 * (sigmoid_gamma_variance - sigmoid_gamma_mean);
-        gating_threshold_variance = self.mGating_Threshold
-            + (510.0f32 - self.mGating_Threshold)
-                * self.mean_variance_estimator___sigmoid__process(
-                    self.m_Mean_Variance_Estimator___Uptime_Gating,
+        let gating_threshold_variance = self.gating_threshold
+            + (510.0 - self.gating_threshold)
+                * self.mean_variance_estimator_sigmoid_process(
+                    self.mean_variance_estimator_uptime_gating,
                 );
-        self.mean_variance_estimator___sigmoid__set_parameters(gating_threshold_variance, 0.09f32);
-        sigmoid_gating_variance = self.mean_variance_estimator___sigmoid__process(self.mGas_Index);
-        self.m_Mean_Variance_Estimator__Gamma_Variance = sigmoid_gating_variance * gamma_variance;
-        self.m_Mean_Variance_Estimator___Gating_Duration_Minutes = self
-            .m_Mean_Variance_Estimator___Gating_Duration_Minutes
-            + self.mSamplingInterval / 60.0f32
-                * ((1.0f32 - sigmoid_gating_mean) * (1.0f32 + 0.3f32) - 0.3f32);
-        if self.m_Mean_Variance_Estimator___Gating_Duration_Minutes < 0.0f32 {
-            self.m_Mean_Variance_Estimator___Gating_Duration_Minutes = 0.0f32;
+        self.mean_variance_estimator_sigmoid_set_parameters(gating_threshold_variance, 0.09f32);
+        let sigmoid_gating_variance = self.mean_variance_estimator_sigmoid_process(self.gas_index);
+        self.mean_variance_estimator_gamma_variance2 = sigmoid_gating_variance * gamma_variance;
+
+        self.mean_variance_estimator_gating_duration_minutes +=
+            self.sampling_interval / 60.0 * ((1.0 - sigmoid_gating_mean) * (1.0 + 0.3f32) - 0.3f32);
+        if self.mean_variance_estimator_gating_duration_minutes < 0.0 {
+            self.mean_variance_estimator_gating_duration_minutes = 0.0;
         }
-        if self.m_Mean_Variance_Estimator___Gating_Duration_Minutes
-            > self.mGating_Max_Duration_Minutes
-        {
-            self.m_Mean_Variance_Estimator___Uptime_Gating = 0.0f32;
+        if self.mean_variance_estimator_gating_duration_minutes > self.gating_max_duration_minutes {
+            self.mean_variance_estimator_uptime_gating = 0.0;
         }
     }
 
-    fn mean_variance_estimator__process(&mut self, mut sraw: f32) {
-        let mut delta_sgp: f32 = 0.;
-        let mut c: f32 = 0.;
-        let mut additional_scaling: f32 = 0.;
-        if !self.m_Mean_Variance_Estimator___Initialized {
-            self.m_Mean_Variance_Estimator___Initialized = true;
-            self.m_Mean_Variance_Estimator___Sraw_Offset = sraw;
-            self.m_Mean_Variance_Estimator___Mean = 0.0f32;
+    fn mean_variance_estimator_process(&mut self, mut sraw: f32) {
+        if !self.mean_variance_estimator_initialized {
+            self.mean_variance_estimator_initialized = true;
+            self.mean_variance_estimator_sraw_offset = sraw;
+            self.mean_variance_estimator_mean = 0.0;
         } else {
-            if self.m_Mean_Variance_Estimator___Mean >= 100.0f32
-                || self.m_Mean_Variance_Estimator___Mean <= -100.0f32
+            if self.mean_variance_estimator_mean >= 100.0
+                || self.mean_variance_estimator_mean <= -100.0
             {
-                self.m_Mean_Variance_Estimator___Sraw_Offset = self
-                    .m_Mean_Variance_Estimator___Sraw_Offset
-                    + self.m_Mean_Variance_Estimator___Mean;
-                self.m_Mean_Variance_Estimator___Mean = 0.0f32;
+                self.mean_variance_estimator_sraw_offset += self.mean_variance_estimator_mean;
+                self.mean_variance_estimator_mean = 0.0;
             }
-            sraw = sraw - self.m_Mean_Variance_Estimator___Sraw_Offset;
-            self.mean_variance_estimator___calculate_gamma();
-            delta_sgp = (sraw - self.m_Mean_Variance_Estimator___Mean) / 64.0f32;
-            if delta_sgp < 0.0f32 {
-                c = self.m_Mean_Variance_Estimator___Std - delta_sgp;
+            sraw -= self.mean_variance_estimator_sraw_offset;
+
+            self.mean_variance_estimator_calculate_gamma();
+            let delta_sgp = (sraw - self.mean_variance_estimator_mean) / 64.0;
+            let c = if delta_sgp < 0.0 {
+                self.mean_variance_estimator_std - delta_sgp
             } else {
-                c = self.m_Mean_Variance_Estimator___Std + delta_sgp;
+                self.mean_variance_estimator_std + delta_sgp
+            };
+            let mut additional_scaling = 1.0;
+            if c > 1440.0 {
+                additional_scaling = c / 1440.0 * (c / 1440.0);
             }
-            additional_scaling = 1.0f32;
-            if c > 1440.0f32 {
-                additional_scaling = c / 1440.0f32 * (c / 1440.0f32);
-            }
-            self.m_Mean_Variance_Estimator___Std = sqrtf(
-                additional_scaling * (64.0f32 - self.m_Mean_Variance_Estimator__Gamma_Variance),
-            ) * sqrtf(
-                self.m_Mean_Variance_Estimator___Std
-                    * (self.m_Mean_Variance_Estimator___Std / (64.0f32 * additional_scaling))
-                    + self.m_Mean_Variance_Estimator__Gamma_Variance * delta_sgp
-                        / additional_scaling
-                        * delta_sgp,
-            );
-            self.m_Mean_Variance_Estimator___Mean = self.m_Mean_Variance_Estimator___Mean
-                + self.m_Mean_Variance_Estimator__Gamma_Mean * delta_sgp / 8.0f32;
+            self.mean_variance_estimator_std =
+                sqrtf(additional_scaling * (64.0 - self.mean_variance_estimator_gamma_variance2))
+                    * sqrtf(
+                        self.mean_variance_estimator_std
+                            * (self.mean_variance_estimator_std / (64.0 * additional_scaling))
+                            + self.mean_variance_estimator_gamma_variance2 * delta_sgp
+                                / additional_scaling
+                                * delta_sgp,
+                    );
+            self.mean_variance_estimator_mean +=
+                self.mean_variance_estimator_gamma_mean2 * delta_sgp / 8.0;
         };
     }
 
-    fn mean_variance_estimator___sigmoid__set_parameters(&mut self, mut X0: f32, mut K: f32) {
-        self.m_Mean_Variance_Estimator___Sigmoid__K = K;
-        self.m_Mean_Variance_Estimator___Sigmoid__X0 = X0;
+    fn mean_variance_estimator_sigmoid_set_parameters(&mut self, x0: f32, k: f32) {
+        self.mean_variance_estimator_sigmoid_k = k;
+        self.mean_variance_estimator_sigmoid_x0 = x0;
     }
 
-    fn mean_variance_estimator___sigmoid__process(&mut self, mut sample: f32) -> f32 {
-        let x: f32 = self.m_Mean_Variance_Estimator___Sigmoid__K
-            * (sample - self.m_Mean_Variance_Estimator___Sigmoid__X0);
-        if x < -50.0f32 {
-            1.0f32
-        } else if x > 50.0f32 {
-            0.0f32
+    fn mean_variance_estimator_sigmoid_process(&mut self, sample: f32) -> f32 {
+        let x: f32 = self.mean_variance_estimator_sigmoid_k
+            * (sample - self.mean_variance_estimator_sigmoid_x0);
+        if x < -50.0 {
+            1.0
+        } else if x > 50.0 {
+            0.0
         } else {
-            1.0f32 / (1.0f32 + expf(x))
+            1.0 / (1.0 + expf(x))
         }
     }
 
-    fn mox_model__set_parameters(&mut self, SRAW_STD: f32, SRAW_MEAN: f32) {
-        self.m_Mox_Model__Sraw_Std = SRAW_STD;
-        self.m_Mox_Model__Sraw_Mean = SRAW_MEAN;
+    fn mox_model_set_parameters(&mut self, sraw_std: f32, sraw_mean: f32) {
+        self.mox_model_sraw_std = sraw_std;
+        self.mox_model_sraw_mean = sraw_mean;
     }
 
-    fn mox_model__process(&mut self, sraw: f32) -> f32 {
-        match self.mAlgorithm_Type {
-            AlgorithmType::Nox => {
-                (sraw - self.m_Mox_Model__Sraw_Mean) / 2000.0f32 * self.mIndex_Gain
-            }
+    fn mox_model_process(&mut self, sraw: f32) -> f32 {
+        match self.algorithm_type {
+            AlgorithmType::Nox => (sraw - self.mox_model_sraw_mean) / 2000.0 * self.index_gain,
             AlgorithmType::Voc => {
-                (sraw - self.m_Mox_Model__Sraw_Mean)
-                    / (-1.0f32 * (self.m_Mox_Model__Sraw_Std + 220.0f32))
-                    * self.mIndex_Gain
+                (sraw - self.mox_model_sraw_mean) / (-1.0 * (self.mox_model_sraw_std + 220.0))
+                    * self.index_gain
             }
         }
     }
 
-    fn sigmoid_scaled__set_parameters(&mut self, X0: f32, K: f32, offset_default: f32) {
-        self.m_Sigmoid_Scaled__K = K;
-        self.m_Sigmoid_Scaled__X0 = X0;
-        self.m_Sigmoid_Scaled__Offset_Default = offset_default;
+    fn sigmoid_scaled_set_parameters(&mut self, x0: f32, k: f32, offset_default: f32) {
+        self.sigmoid_scaled_k = k;
+        self.sigmoid_scaled_x0 = x0;
+        self.sigmoid_scaled_offset_default = offset_default;
     }
 
-    fn sigmoid_scaled__process(&mut self, sample: f32) -> f32 {
-        let mut x: f32 = 0.;
-        let mut shift: f32 = 0.;
-        x = self.m_Sigmoid_Scaled__K * (sample - self.m_Sigmoid_Scaled__X0);
-        if x < -50.0f32 {
-            return 500.0f32;
-        } else if x > 50.0f32 {
-            return 0.0f32;
-        } else if sample >= 0.0f32 {
-            if self.m_Sigmoid_Scaled__Offset_Default == 1.0f32 {
-                shift = 500.0f32 / 499.0f32 * (1.0f32 - self.mIndex_Offset);
+    fn sigmoid_scaled_process(&mut self, sample: f32) -> f32 {
+        let x = self.sigmoid_scaled_k * (sample - self.sigmoid_scaled_x0);
+        if x < -50.0 {
+            500.0
+        } else if x > 50.0 {
+            0.0
+        } else if sample >= 0.0 {
+            let shift = if self.sigmoid_scaled_offset_default == 1.0 {
+                500.0 / 499.0 * (1.0 - self.index_offset)
             } else {
-                shift = (500.0f32 - 5.0f32 * self.mIndex_Offset) / 4.0f32;
-            }
-            return (500.0f32 + shift) / (1.0f32 + expf(x)) - shift;
+                (500.0 - 5.0 * self.index_offset) / 4.0
+            };
+            (500.0 + shift) / (1.0 + expf(x)) - shift
         } else {
-            return self.mIndex_Offset / self.m_Sigmoid_Scaled__Offset_Default
-                * (500.0f32 / (1.0f32 + expf(x)));
-        };
+            self.index_offset / self.sigmoid_scaled_offset_default * (500.0 / (1.0 + expf(x)))
+        }
     }
 
-    fn adaptive_lowpass__set_parameters(&mut self) {
-        self.m_Adaptive_Lowpass__A1 = self.mSamplingInterval / (20.0f32 + self.mSamplingInterval);
-        self.m_Adaptive_Lowpass__A2 = self.mSamplingInterval / (500.0f32 + self.mSamplingInterval);
-        self.m_Adaptive_Lowpass___Initialized = false;
+    fn adaptive_lowpass_set_parameters(&mut self) {
+        self.adaptive_lowpass_a1 = self.sampling_interval / (20.0 + self.sampling_interval);
+        self.adaptive_lowpass_a2 = self.sampling_interval / (500.0 + self.sampling_interval);
+        self.adaptive_lowpass_initialized = false;
     }
 
-    fn adaptive_lowpass__process(&mut self, mut sample: f32) -> f32 {
-        let mut abs_delta: f32 = 0.;
-        let mut F1: f32 = 0.;
-        let mut tau_a: f32 = 0.;
-        let mut a3: f32 = 0.;
-        if !self.m_Adaptive_Lowpass___Initialized {
-            self.m_Adaptive_Lowpass___X1 = sample;
-            self.m_Adaptive_Lowpass___X2 = sample;
-            self.m_Adaptive_Lowpass___X3 = sample;
-            self.m_Adaptive_Lowpass___Initialized = true;
+    fn adaptive_lowpass_process(&mut self, sample: f32) -> f32 {
+        if !self.adaptive_lowpass_initialized {
+            self.adaptive_lowpass_x1 = sample;
+            self.adaptive_lowpass_x2 = sample;
+            self.adaptive_lowpass_x3 = sample;
+            self.adaptive_lowpass_initialized = true;
         }
-        self.m_Adaptive_Lowpass___X1 = (1.0f32 - self.m_Adaptive_Lowpass__A1)
-            * self.m_Adaptive_Lowpass___X1
-            + self.m_Adaptive_Lowpass__A1 * sample;
-        self.m_Adaptive_Lowpass___X2 = (1.0f32 - self.m_Adaptive_Lowpass__A2)
-            * self.m_Adaptive_Lowpass___X2
-            + self.m_Adaptive_Lowpass__A2 * sample;
-        abs_delta = self.m_Adaptive_Lowpass___X1 - self.m_Adaptive_Lowpass___X2;
-        if abs_delta < 0.0f32 {
-            abs_delta = -1.0f32 * abs_delta;
+        self.adaptive_lowpass_x1 = (1.0 - self.adaptive_lowpass_a1) * self.adaptive_lowpass_x1
+            + self.adaptive_lowpass_a1 * sample;
+        self.adaptive_lowpass_x2 = (1.0 - self.adaptive_lowpass_a2) * self.adaptive_lowpass_x2
+            + self.adaptive_lowpass_a2 * sample;
+        let mut abs_delta = self.adaptive_lowpass_x1 - self.adaptive_lowpass_x2;
+        if abs_delta < 0.0 {
+            abs_delta *= -1.0;
         }
-        F1 = expf(-0.2f32 * abs_delta);
-        tau_a = (500.0f32 - 20.0f32) * F1 + 20.0f32;
-        a3 = self.mSamplingInterval / (self.mSamplingInterval + tau_a);
-        self.m_Adaptive_Lowpass___X3 = (1.0f32 - a3) * self.m_Adaptive_Lowpass___X3 + a3 * sample;
-        return self.m_Adaptive_Lowpass___X3;
+        let f1 = expf(-0.2f32 * abs_delta);
+        let tau_a = (500.0 - 20.0) * f1 + 20.0;
+        let a3 = self.sampling_interval / (self.sampling_interval + tau_a);
+        self.adaptive_lowpass_x3 = (1.0 - a3) * self.adaptive_lowpass_x3 + a3 * sample;
+        self.adaptive_lowpass_x3
+    }
+}
+
+fn expf(value: f32) -> f32 {
+    F32Ext::exp(value)
+}
+
+fn sqrtf(value: f32) -> f32 {
+    F32Ext::sqrt(value)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn voc_reaches_mean() {
+        let mut algo = GasIndexAlgorithm::new(AlgorithmType::Voc, 1.0);
+        for _ in 0..200 {
+            let _ = algo.process(1337);
+        }
+        assert_eq!(algo.process(1337), 100);
+    }
+
+    #[test]
+    fn nox_reaches_mean() {
+        let mut algo = GasIndexAlgorithm::new(AlgorithmType::Nox, 1.0);
+        for _ in 0..200 {
+            let _ = algo.process(1337);
+        }
+        assert_eq!(algo.process(1337), 1);
     }
 }

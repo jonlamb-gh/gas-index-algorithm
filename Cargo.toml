@@ -1,6 +1,11 @@
 [package]
 name = "gas-index-algorithm"
 version = "0.1.0"
+authors = ["Jon Lamb"]
 edition = "2021"
+repository = "https://github.com/jonlamb-gh/gas-index-algorithm"
+description = "An unofficial Rust port of Sensirion's gas-index-algorithm"
+categories = ["no-std"]
 
 [dependencies]
+micromath = "2.0"
