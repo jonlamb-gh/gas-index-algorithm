@@ -6,6 +6,7 @@ edition = "2021"
 repository = "https://github.com/jonlamb-gh/gas-index-algorithm"
 description = "An unofficial Rust port of Sensirion's gas-index-algorithm"
 categories = ["no-std"]
+license = "BSD-3-Clause"
 
 [dependencies]
 micromath = "2.0"
