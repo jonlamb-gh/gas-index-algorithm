@@ -25,17 +25,13 @@ impl GasIndexAlgorithm {
 
     pub fn new(algorithm_type: AlgorithmType, sampling_interval: f32) -> Self {
         let mut s = Self::new_uninitialized(algorithm_type);
-        s.init_with_sampling_interval(algorithm_type, sampling_interval);
+        s.init_with_sampling_interval(sampling_interval);
         s
     }
 
-    pub fn init_with_sampling_interval(
-        &mut self,
-        algorithm_type: AlgorithmType,
-        sampling_interval: f32,
-    ) {
+    pub fn init_with_sampling_interval(&mut self, sampling_interval: f32) {
         self.state
-            .init_with_sampling_interval(algorithm_type, sampling_interval);
+            .init_with_sampling_interval(self.state.algorithm_type, sampling_interval);
     }
 
     /// Calculate the gas index value from the raw sensor value.
