@@ -1,11 +1,12 @@
 [package]
 name = "gas-index-algorithm"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Jon Lamb"]
 edition = "2021"
 repository = "https://github.com/jonlamb-gh/gas-index-algorithm"
 description = "An unofficial Rust port of Sensirion's gas-index-algorithm"
 categories = ["no-std"]
+documentation = "https://docs.rs/gas-index-algorithm"
 license = "BSD-3-Clause"
 
 [dependencies]

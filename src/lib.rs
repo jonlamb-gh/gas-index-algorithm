@@ -16,54 +16,26 @@ pub struct GasIndexAlgorithm {
 }
 
 impl GasIndexAlgorithm {
+    /// SAFETY: must call 'init_with_sampling_interval' before processing
+    pub const fn new_uninitialized(algorithm_type: AlgorithmType) -> Self {
+        Self {
+            state: GasIndexAlgorithmParams::new_uninit(algorithm_type),
+        }
+    }
+
     pub fn new(algorithm_type: AlgorithmType, sampling_interval: f32) -> Self {
-        let mut state = GasIndexAlgorithmParams {
-            algorithm_type,
-            sampling_interval: 0.0,
-            index_offset: 0.0,
-            sraw_minimum: 0,
-            gating_max_duration_minutes: 0.0,
-            init_duration_mean: 0.0,
-            init_duration_variance: 0.0,
-            gating_threshold: 0.0,
-            index_gain: 0.0,
-            tau_mean_hours: 0.0,
-            tau_variance_hours: 0.0,
-            sraw_std_initial: 0.0,
-            uptime: 0.0,
-            sraw: 0.0,
-            gas_index: 0.0,
-            mean_variance_estimator_initialized: false,
-            mean_variance_estimator_mean: 0.0,
-            mean_variance_estimator_sraw_offset: 0.0,
-            mean_variance_estimator_std: 0.0,
-            mean_variance_estimator_gamma_mean: 0.0,
-            mean_variance_estimator_gamma_variance: 0.0,
-            mean_variance_estimator_gamma_initial_mean: 0.0,
-            mean_variance_estimator_gamma_initial_variance: 0.0,
-            mean_variance_estimator_gamma_mean2: 0.0,
-            mean_variance_estimator_gamma_variance2: 0.0,
-            mean_variance_estimator_uptime_gamma: 0.0,
-            mean_variance_estimator_uptime_gating: 0.0,
-            mean_variance_estimator_gating_duration_minutes: 0.0,
-            mean_variance_estimator_sigmoid_k: 0.0,
-            mean_variance_estimator_sigmoid_x0: 0.0,
-            mox_model_sraw_std: 0.0,
-            mox_model_sraw_mean: 0.0,
-            sigmoid_scaled_k: 0.0,
-            sigmoid_scaled_x0: 0.0,
-            sigmoid_scaled_offset_default: 0.0,
-            adaptive_lowpass_a1: 0.0,
-            adaptive_lowpass_a2: 0.0,
-            adaptive_lowpass_initialized: false,
-            adaptive_lowpass_x1: 0.0,
-            adaptive_lowpass_x2: 0.0,
-            adaptive_lowpass_x3: 0.0,
-        };
+        let mut s = Self::new_uninitialized(algorithm_type);
+        s.init_with_sampling_interval(algorithm_type, sampling_interval);
+        s
+    }
 
-        state.init_with_sampling_interval(algorithm_type, sampling_interval);
-
-        Self { state }
+    pub fn init_with_sampling_interval(
+        &mut self,
+        algorithm_type: AlgorithmType,
+        sampling_interval: f32,
+    ) {
+        self.state
+            .init_with_sampling_interval(algorithm_type, sampling_interval);
     }
 
     /// Calculate the gas index value from the raw sensor value.
@@ -121,6 +93,52 @@ pub struct GasIndexAlgorithmParams {
 }
 
 impl GasIndexAlgorithmParams {
+    const fn new_uninit(algorithm_type: AlgorithmType) -> Self {
+        GasIndexAlgorithmParams {
+            algorithm_type,
+            sampling_interval: 0.0,
+            index_offset: 0.0,
+            sraw_minimum: 0,
+            gating_max_duration_minutes: 0.0,
+            init_duration_mean: 0.0,
+            init_duration_variance: 0.0,
+            gating_threshold: 0.0,
+            index_gain: 0.0,
+            tau_mean_hours: 0.0,
+            tau_variance_hours: 0.0,
+            sraw_std_initial: 0.0,
+            uptime: 0.0,
+            sraw: 0.0,
+            gas_index: 0.0,
+            mean_variance_estimator_initialized: false,
+            mean_variance_estimator_mean: 0.0,
+            mean_variance_estimator_sraw_offset: 0.0,
+            mean_variance_estimator_std: 0.0,
+            mean_variance_estimator_gamma_mean: 0.0,
+            mean_variance_estimator_gamma_variance: 0.0,
+            mean_variance_estimator_gamma_initial_mean: 0.0,
+            mean_variance_estimator_gamma_initial_variance: 0.0,
+            mean_variance_estimator_gamma_mean2: 0.0,
+            mean_variance_estimator_gamma_variance2: 0.0,
+            mean_variance_estimator_uptime_gamma: 0.0,
+            mean_variance_estimator_uptime_gating: 0.0,
+            mean_variance_estimator_gating_duration_minutes: 0.0,
+            mean_variance_estimator_sigmoid_k: 0.0,
+            mean_variance_estimator_sigmoid_x0: 0.0,
+            mox_model_sraw_std: 0.0,
+            mox_model_sraw_mean: 0.0,
+            sigmoid_scaled_k: 0.0,
+            sigmoid_scaled_x0: 0.0,
+            sigmoid_scaled_offset_default: 0.0,
+            adaptive_lowpass_a1: 0.0,
+            adaptive_lowpass_a2: 0.0,
+            adaptive_lowpass_initialized: false,
+            adaptive_lowpass_x1: 0.0,
+            adaptive_lowpass_x2: 0.0,
+            adaptive_lowpass_x3: 0.0,
+        }
+    }
+
     fn init_with_sampling_interval(
         &mut self,
         algorithm_type: AlgorithmType,
