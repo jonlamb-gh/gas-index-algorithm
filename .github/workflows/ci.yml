@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   lint:
@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache target
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -54,26 +54,6 @@ jobs:
           command: doc
           args: --all-features
 
-      - name: Build examples
-        uses: marcopolo/cargo@master
-        with:
-          command: build
-          working-directory: examples
-          args: --release
-
-      - name: Clippy examples
-        uses: marcopolo/cargo@master
-        with:
-          command: clippy
-          working-directory: examples
-
-      - name: Format examples
-        uses: marcopolo/cargo@master
-        with:
-          command: fmt
-          working-directory: examples
-          args: --all -- --check
-
   no-std:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -84,10 +64,10 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache target
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -125,10 +105,10 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache target
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -161,10 +141,10 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache target
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry

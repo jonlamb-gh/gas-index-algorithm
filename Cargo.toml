@@ -1,6 +1,6 @@
 [package]
 name = "gas-index-algorithm"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jon Lamb"]
 edition = "2021"
 repository = "https://github.com/jonlamb-gh/gas-index-algorithm"
