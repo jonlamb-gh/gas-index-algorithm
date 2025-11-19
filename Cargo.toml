@@ -11,3 +11,4 @@ license = "BSD-3-Clause"
 
 [dependencies]
 micromath = "2.0"
+serde = { version = "1", default-features = false, features = ["derive"], optional = true }
