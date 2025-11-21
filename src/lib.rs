@@ -5,12 +5,14 @@
 use micromath::F32Ext;
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum AlgorithmType {
     Voc,
     Nox,
 }
 
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct GasIndexAlgorithm {
     state: GasIndexAlgorithmParams,
 }
@@ -44,6 +46,7 @@ impl GasIndexAlgorithm {
 }
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct GasIndexAlgorithmParams {
     pub algorithm_type: AlgorithmType,
     pub sampling_interval: f32,
